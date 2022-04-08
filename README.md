@@ -1,6 +1,6 @@
 # gen-role kubectl
 
-A `kubectl` plugin to generate roles and clusterroles based on kubectl interactions
+A `kubectl` plugin to generate roles and ClusterRoles based on kubectl interactions
 
 Say you want to run a script inside your cluster with a ServiceAccount, and want to know which RBAC is necessary for it.
 The script should do the following
@@ -13,7 +13,7 @@ kubectl delete pod curl -n default
 kubectl get deployment -A
 ```
 
-By running the commands with the gen-role plugin, the necessary RBAC will be cummulated in the files gen-role.yaml and gen-clusterrole.yaml.
+By running the commands with the gen-role plugin, the necessary RBAC will be cummulated in the files `gen-role.yaml` and `gen-clusterrole.yaml`.
 All you need to do is bind them to the right ServiceAccount:
 
 ```
@@ -61,4 +61,24 @@ rules:
   - list
   - watch
   - delete
+```
+
+# Setup
+
+Clone this repo and run
+
+```
+make bin
+```
+
+make the binary available somewhere in your `PATH` as `kubectl-gen_role`, e.g. with:
+
+```
+ln -s `pwd`/bin/gen-role /usr/local/bin/kubectl-gen_role
+```
+
+Use it with any kubectl command:
+
+```
+kubectl gen-role get po
 ```
