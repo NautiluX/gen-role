@@ -3,7 +3,8 @@
 A `kubectl` plugin to generate roles and ClusterRoles based on kubectl interactions
 
 Say you want to run a script inside your cluster with a ServiceAccount, and want to know which RBAC is necessary for it.
-The script should do the following
+
+For example, if the script should do the following:
 
 ```
 kubectl run -n default curl --image=curlimages/curl --command sleep 30h
@@ -13,8 +14,7 @@ kubectl delete pod curl -n default
 kubectl get deployment -A
 ```
 
-By running the commands with the gen-role plugin, the necessary RBAC will be cummulated in the files `gen-role.yaml` and `gen-clusterrole.yaml`.
-All you need to do is bind them to the right ServiceAccount:
+By running the commands with the gen-role plugin on your local machine, the necessary RBAC will be accumulated in the files `gen-role.yaml` and `gen-clusterrole.yaml`.
 
 ```
 kubectl gen-role run -n default curl --image=curlimages/curl --command sleep 30h
@@ -62,6 +62,8 @@ rules:
   - watch
   - delete
 ```
+
+All you need to do is bind them to the right ServiceAccount in the cluster.
 
 # Setup
 
