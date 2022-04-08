@@ -69,12 +69,7 @@ Clone this repo and run
 
 ```
 make bin
-```
-
-make the binary available somewhere in your `PATH` as `kubectl-gen_role`, e.g. with:
-
-```
-ln -s `pwd`/bin/gen-role /usr/local/bin/kubectl-gen_role
+sudo make install
 ```
 
 Use it with any kubectl command:
@@ -82,3 +77,13 @@ Use it with any kubectl command:
 ```
 kubectl gen-role get po
 ```
+
+The default is that the binary will be installed in `/usr/local/bin`.
+To change the destination, set the `BINDIR` variable:
+
+```
+make bin
+sudo make install BINDIR=/home/me/bin
+```
+
+However, the binary needs to be available in the `PATH` to be recognized as a kubectl plugin.

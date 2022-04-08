@@ -1,5 +1,6 @@
 
 export GO111MODULE=on
+export BINDIR?=/usr/local/bin
 
 .PHONY: test
 test:
@@ -7,7 +8,11 @@ test:
 
 .PHONY: bin
 bin: fmt vet
-	go build -o bin/gen-role github.com/NautiluX/gen-role/cmd/plugin
+	go build -o bin/kubectl-gen_role github.com/NautiluX/gen-role/cmd/plugin
+
+.PHONY: install
+install:
+	cp bin/kubectl-gen_role $(BINDIR)/
 
 .PHONY: fmt
 fmt:
