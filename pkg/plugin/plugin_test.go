@@ -73,6 +73,26 @@ var _ = Describe("Plugin", func() {
 				Expect(perms.Namespaced).To(BeFalse())
 			})
 
+			It("returns correct permissions for oc exec -ti curl curl google.com", func() {
+				inputMatches = []string{"", "POST", "https://api.crc.testing:6443/api/v1/namespaces/default/pods/curl/exec?command=curl&command=google.com&container=curl&stderr=true&stdin=true&stdout=true"}
+				perms, _ := ParsePerms(inputMatches)
+				Expect(perms.Verb).To(Equal("post"))
+				Expect(perms.Namespace).To(Equal("default"))
+				Expect(perms.Resource).To(Equal("pods"))
+				Expect(perms.Api).To(Equal("v1"))
+				Expect(perms.Namespaced).To(BeTrue())
+			})
+
+			It("returns correct permissions for watching resources", func() {
+				inputMatches = []string{"", "GET", "https://api.crc.testing:6443/api/v1/namespaces/default/pods?fieldSelector=metadata.name%3Dcurl&resourceVersion=107674&watch=true"}
+				perms, _ := ParsePerms(inputMatches)
+				Expect(perms.Verb).To(Equal("watch"))
+				Expect(perms.Namespace).To(Equal("default"))
+				Expect(perms.Resource).To(Equal("pods"))
+				Expect(perms.Api).To(Equal("v1"))
+				Expect(perms.Namespaced).To(BeTrue())
+			})
+
 		})
 		Context("When modifying resources", func() {
 			It("returns correct permissions for clusterrolebinding deletion", func() {

@@ -55,7 +55,7 @@ func RunPlugin(configFlags *genericclioptions.ConfigFlags) error {
 	fmt.Println("Matched requests:")
 
 	perms := []Perm{}
-	regexRequest := regexp.MustCompilePOSIX(".*(GET|DELETE|POST|PATCH|PUT) https?://.*:[0-9]+/(.*) 2.. OK.*")
+	regexRequest := regexp.MustCompilePOSIX(".*(GET|DELETE|POST|PATCH|PUT) https?://.*:[0-9]+/(.*) [123].. .*")
 	for scanner.Scan() {
 		line := scanner.Text()
 		matches := regexRequest.FindStringSubmatch(line)
@@ -111,24 +111,31 @@ func ParsePerms(matches []string) (p Perm, success bool) {
 		p.Resource = urlMatches[3]
 		resourceName := urlMatches[4]
 		p.Namespaced = true
-		// parameters = urlMatches[5]
+		parameters := urlMatches[5]
+		if strings.Contains(parameters, "watch=true") && p.Verb == "get" {
+			p.Verb = "watch"
+		}
 		if resourceName == "" && p.Verb == "get" {
 			p.Verb = "list"
 		}
 		return p, true
 	}
 
-	regexNotNamespaced := regexp.MustCompilePOSIX("apis?/([^/?]+(/[^/?]+)?)/([^/?]+)(/[^/?]+)?")
+	regexNotNamespaced := regexp.MustCompilePOSIX("apis?/([^/?]+(/[^/?]+)?)/([^/?]+)(/[^/?]+)?(\\?.*)?")
 	urlMatches = regexNotNamespaced.FindStringSubmatch(matches[2])
 	//fmt.Printf("Matches: %d\n", len(urlMatches))
 	//for _, m := range urlMatches {
 	//	fmt.Println(m)
 	//}
-	if len(urlMatches) == 5 {
+	if len(urlMatches) == 6 {
 		p.Api = urlMatches[1]
 		p.Resource = urlMatches[3]
 		p.Namespaced = false
 		resourceName := urlMatches[4]
+		parameters := urlMatches[5]
+		if strings.Contains(parameters, "watch=true") && p.Verb == "get" {
+			p.Verb = "watch"
+		}
 		if resourceName == "" && p.Verb == "get" {
 			p.Verb = "list"
 		}
@@ -149,6 +156,8 @@ func GenerateRole(perms []Perm) (role v1.Role) {
 		fmt.Println("Adding permissions to role definition in gen-role.yaml")
 	}
 
+	role.Kind = "Role"
+	role.APIVersion = "rbac.authorization.k8s.io/v1"
 	role.Name = "gen-role-generated-role"
 	role.Namespace = "gen-role-generated-role"
 	for _, p := range perms {
@@ -184,6 +193,8 @@ func GenerateClusterRole(perms []Perm) (role v1.ClusterRole) {
 		}
 		fmt.Println("Adding permissions to cluster-role definition in gen-cluster-role.yaml")
 	}
+	role.Kind = "Role"
+	role.APIVersion = "rbac.authorization.k8s.io/v1"
 	role.Name = "gen-role-generated-clusterrole"
 	role.Namespace = "gen-role-generated-clusterrole"
 	for _, p := range perms {
