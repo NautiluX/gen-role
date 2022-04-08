@@ -1,10 +1,10 @@
-project_name: {{ .PluginName }}
+project_name: gen-role
 release:
   github:
-    owner: {{ .Owner }}
-    name: {{ .Repo }}
+    owner: NautiluX
+    name: gen-role
 builds:
-  - id: {{ .PluginName }}
+  - id: gen-role
     goos:
     - linux
     - windows
@@ -17,12 +17,12 @@ builds:
       - GO111MODULE=on
     main: cmd/plugin/main.go
     ldflags: -s -w
-      -X github.com/{{ .Owner }}/{{ .Repo }}/pkg/version.version=
+      -X github.com/NautiluX/gen-role/pkg/version.version=
 archives:
-  - id: {{ .PluginName }}
+  - id: gen-role
     builds:
-    - {{ .PluginName }}
-    name_template: {{ `"{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"` }}
+    - gen-role
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
     - goos: windows
       format: zip

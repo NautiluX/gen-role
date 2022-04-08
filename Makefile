@@ -7,7 +7,7 @@ test:
 
 .PHONY: bin
 bin: fmt vet
-	go build -o bin/{{ .PluginName }} github.com/{{ .Owner }}/{{ .Repo }}/cmd/plugin
+	go build -o bin/gen-role github.com/NautiluX/gen-role/cmd/plugin
 
 .PHONY: fmt
 fmt:
